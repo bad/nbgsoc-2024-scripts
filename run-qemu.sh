@@ -12,6 +12,22 @@ vmrootfile=${pfx}/netbsd-10.0
 isoimage=${pfx}/NetBSD-10.0_RC5-amd64.iso
 hostfwdssh=",hostfwd=tcp:127.1:2222-:22"
 
+case `uname -s` in
+    Linux)
+	accel=kvm
+	;;
+    Darwin)
+	accel=hvf
+	;;
+    NetBSD)
+	accel=nvmm
+	;;
+    *)
+	err 2 "unkown operating system. can't choose accellerator"
+	;;
+esac
+
+
 usage() {
     cat 1>&2 <<EOF
 usage: $0 [-n] [-v | --verbose] [--iso-image file] [[-m|--mem] size] [--ssh] [--] [ qemu-options]
@@ -62,7 +78,7 @@ while [ $# -ge 1 ]; do
     esac
 done
 
-qemucmd="qemu-system-x86_64 -M q35 -cpu host -accel kvm
+qemucmd="qemu-system-x86_64 -M q35 -cpu host -accel $accel
     -smp ${numcpu} -m ${memsz}
     -device virtio-rng,rng=rng0
     -object rng-random,id=rng0,filename=/dev/urandom
