@@ -85,7 +85,7 @@ qemucmd="qemu-system-x86_64 -M q35 -cpu host -accel $accel
     -nic user,model=virtio-net-pci${fwdssh:+$hostfwdssh}
     -drive if=ide,index=0,id=wd0,media=disk,file=${vmrootfile}
     -drive if=ide,index=1,id=cd0,media=cdrom,file=${isoimage}
-    -nographic"
+    -display none -serial mon:stdio"
 
 if [ ! -f ${vmrootfile} ]; then
     run qemu-img create -f qcow2 ${vmrootfile} ${vmrootsz} ||
