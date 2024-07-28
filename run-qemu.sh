@@ -2,6 +2,8 @@
 #
 # run-qemu.sh -- run the netbsd vm with qemu.
 #
+set -eu
+
 dryrun=
 verbose=false
 memsz=2g
