@@ -33,7 +33,7 @@ esac
 
 usage() {
     cat 1>&2 <<EOF
-usage: $0 [-n] [-v | --verbose] [--iso-image file] [[-m|--mem] size] [--ssh] [--fsdev dir]... [--] [ qemu-options]
+usage: $0 [-n] [-v | --verbose] [--root-image file] [--root-size sz] [--iso-image file] [[-m|--mem] size] [--ssh] [--fsdev dir]... [--] [ qemu-options]
 EOF
     exit 3
 }
