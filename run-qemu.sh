@@ -66,6 +66,11 @@ while [ $# -ge 1 ]; do
 	    [ $# -ge 1 ] || err 2 "--root-image requires a file name argument"
 	    vmrootfile=$1; shift
 	    ;;
+	--root-size)
+	    shift
+	    [ $# -ge 1 ] || err 2 "--root-size requires a size argument"
+	    vmrootsz=$1; shift
+	    ;;
 	--iso-image)
 	    shift
 	    [ $# -ge 1 ] || err 2 "--iso-image requires a file name argument"
