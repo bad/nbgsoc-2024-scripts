@@ -61,6 +61,11 @@ while [ $# -ge 1 ]; do
 	-v | --verbose)
 	    verbose=true; shift;
 	    ;;
+	--root-image)
+	    shift
+	    [ $# -ge 1 ] || err 2 "--root-image requires a file name argument"
+	    vmrootfile=$1; shift
+	    ;;
 	--iso-image)
 	    shift
 	    [ $# -ge 1 ] || err 2 "--iso-image requires a file name argument"
