@@ -13,6 +13,7 @@ vmrootsz=10g
 vmrootfile=${pfx}/netbsd-10.0
 isoimage=${pfx}/NetBSD-10.0_RC5-amd64.iso
 hostfwdssh=",hostfwd=tcp:127.1:2222-:22"
+console="-display none -serial mon:stdio"
 fsdev=""
 
 case `uname -s` in
@@ -33,7 +34,7 @@ esac
 
 usage() {
     cat 1>&2 <<EOF
-usage: $0 [-n] [-v | --verbose] [--root-image file] [--root-size sz] [--iso-image file] [[-m|--mem] size] [--ssh] [--fsdev dir]... [--] [ qemu-options]
+usage: $0 [-n] [-v | --verbose] [-c [nographic|curses|serial]] [--root-image file] [--root-size sz] [--iso-image file] [[-m|--mem] size] [--ssh] [--fsdev dir]... [--] [ qemu-options]
 EOF
     exit 3
 }
@@ -60,6 +61,25 @@ while [ $# -ge 1 ]; do
 	    ;;
 	-v | --verbose)
 	    verbose=true; shift;
+	    ;;
+	-c)
+	    shift
+	    [ $# -ge 1 ] || err 2 "-c requires an argument (nographic|curses|serial)"
+	    case $1 in
+		nographic)
+		    console="-nographic"
+		    ;;
+		curses)
+		    console="-display curses"
+		    ;;
+		serial)
+		    console="-display none -serial mon:stdio"
+		    ;;
+		*)
+		    err 2 "unknown console option '$1'"
+		    ;;
+	    esac
+	    shift
 	    ;;
 	--root-image)
 	    shift
@@ -106,7 +126,7 @@ qemucmd="qemu-system-x86_64 -M q35 -cpu host -accel $accel
     -drive if=ide,index=0,id=wd0,media=disk,file=${vmrootfile}
     -cdrom ${isoimage}
     ${fsdev}
-    -display none -serial mon:stdio"
+    ${console}"
 
 if [ ! -f ${vmrootfile} ]; then
     run qemu-img create -f qcow2 ${vmrootfile} ${vmrootsz} ||
