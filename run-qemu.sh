@@ -93,7 +93,7 @@ qemucmd="qemu-system-x86_64 -M q35 -cpu host -accel $accel
     -object rng-random,id=rng0,filename=/dev/urandom
     -nic user,model=virtio-net-pci${fwdssh:+$hostfwdssh}
     -drive if=ide,index=0,id=wd0,media=disk,file=${vmrootfile}
-    -drive if=ide,index=1,id=cd0,media=cdrom,file=${isoimage}
+    -cdrom ${isoimage}
     ${fsdev}
     -display none -serial mon:stdio"
 
