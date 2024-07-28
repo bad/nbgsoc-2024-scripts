@@ -13,6 +13,7 @@ vmrootsz=10g
 vmrootfile=${pfx}/netbsd-10.0
 isoimage=${pfx}/NetBSD-10.0_RC5-amd64.iso
 hostfwdssh=",hostfwd=tcp:127.1:2222-:22"
+fsdev=""
 
 case `uname -s` in
     Linux)
@@ -32,7 +33,7 @@ esac
 
 usage() {
     cat 1>&2 <<EOF
-usage: $0 [-n] [-v | --verbose] [--iso-image file] [[-m|--mem] size] [--ssh] [--] [ qemu-options]
+usage: $0 [-n] [-v | --verbose] [--iso-image file] [[-m|--mem] size] [--ssh] [--fsdev dir]... [--] [ qemu-options]
 EOF
     exit 3
 }
@@ -74,6 +75,12 @@ while [ $# -ge 1 ]; do
 	    shift
 	    fwdssh=true
 	    ;;
+	--fsdev)
+	    shift
+	    dir=$1; shift
+	    [ ! -d "$dir" ] && err 1 "directory $dir doesn't exist"
+	    fsdev="$fsdev -fsdev local,id=${dir},security_model=none,readonly=on,path=${dir} -device virtio-9p-pci,fsdev=${dir},mount_tag=${dir}"
+	    ;;
 	*)
 	    usage
 	    ;;
@@ -87,6 +94,7 @@ qemucmd="qemu-system-x86_64 -M q35 -cpu host -accel $accel
     -nic user,model=virtio-net-pci${fwdssh:+$hostfwdssh}
     -drive if=ide,index=0,id=wd0,media=disk,file=${vmrootfile}
     -drive if=ide,index=1,id=cd0,media=cdrom,file=${isoimage}
+    ${fsdev}
     -display none -serial mon:stdio"
 
 if [ ! -f ${vmrootfile} ]; then
