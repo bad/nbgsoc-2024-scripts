@@ -11,7 +11,7 @@ numcpu=2
 pfx=vm
 vmrootsz=10g
 vmrootfile=${pfx}/netbsd-10.0
-isoimage=${pfx}/NetBSD-10.0_RC5-amd64.iso
+isoimage=${pfx}/NetBSD-10.0-amd64.iso
 hostfwdssh=",hostfwd=tcp:127.1:2222-:22"
 console="-display none -serial mon:stdio"
 fsdev=""
