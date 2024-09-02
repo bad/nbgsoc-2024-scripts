@@ -110,7 +110,8 @@ while [ $# -ge 1 ]; do
 	    [ $# -ge 1 ] || err 2 "-m | --fsdev requires a directory name"
 	    dir=$1; shift
 	    [ ! -d "$dir" ] && err 1 "directory $dir doesn't exist"
-	    fsdev="$fsdev -fsdev local,id=${dir},security_model=none,readonly=on,path=${dir} -device virtio-9p-pci,fsdev=${dir},mount_tag=${dir}"
+	    tag=$(basename "$dir")
+	    fsdev="$fsdev -fsdev local,id=${tag},security_model=none,readonly=on,path=${dir} -device virtio-9p-pci,fsdev=${tag},mount_tag=${tag}"
 	    ;;
 	*)
 	    usage
