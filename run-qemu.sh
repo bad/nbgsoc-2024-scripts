@@ -34,7 +34,7 @@ esac
 
 usage() {
     cat 1>&2 <<EOF
-usage: $0 [-n] [-v | --verbose] [-c [nographic|curses|serial]] [--root-image file] [--root-size sz] [--iso-image file] [[-m|--mem] size] [--ssh] [--fsdev dir]... [--] [ qemu-options]
+usage: $0 [-n] [-v | --verbose] [-c [nographic|curses|serial]] [--root-image file] [--root-size sz] [--iso-image file] [[-m|--mem] size] [--ssh] [--fsdev dir[,ro|rw]]... [--] [ qemu-options]
 EOF
     exit 3
 }
@@ -108,10 +108,20 @@ while [ $# -ge 1 ]; do
 	--fsdev)
 	    shift
 	    [ $# -ge 1 ] || err 2 "-m | --fsdev requires a directory name"
-	    dir=$1; shift
+
+	    roflag=$(expr "$1" : '.*,\(r[ow]\)$' || true)
+	    case ${roflag:-rw} in # default to read-write as qemu does
+		ro) roflag=",readonly=on";;
+		rw) roflag=;;
+	    esac
+
+	    dir=$(echo "$1"| sed -e 's/,.*//') # strip everything from ',' on
 	    [ ! -d "$dir" ] && err 1 "directory $dir doesn't exist"
+
+	    shift
+
 	    tag=$(basename "$dir")
-	    fsdev="$fsdev -fsdev local,id=${tag},security_model=none,readonly=on,path=${dir} -device virtio-9p-pci,fsdev=${tag},mount_tag=${tag}"
+	    fsdev="$fsdev -fsdev local,id=${tag},security_model=none,path=${dir}${roflag} -device virtio-9p-pci,fsdev=${tag},mount_tag=${tag}"
 	    ;;
 	*)
 	    echo "unkown option: $1" 1>&2
