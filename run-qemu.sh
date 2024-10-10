@@ -114,6 +114,7 @@ while [ $# -ge 1 ]; do
 	    fsdev="$fsdev -fsdev local,id=${tag},security_model=none,readonly=on,path=${dir} -device virtio-9p-pci,fsdev=${tag},mount_tag=${tag}"
 	    ;;
 	*)
+	    echo "unkown option: $1" 1>&2
 	    usage
 	    ;;
     esac
